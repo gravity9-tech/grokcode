@@ -53,6 +53,8 @@ def workspace_init(
 
 
 async def _workspace_init(name: str, team_id: str) -> None:
+    import subprocess
+
     from grokcode.workspace.collections_client import CollectionsClient
     from grokcode.workspace.workspace import init_workspace
 
@@ -64,14 +66,31 @@ async def _workspace_init(name: str, team_id: str) -> None:
             print_error(f"Failed to create workspace: {e}")
             raise typer.Exit(1)
 
+    # Automatically stage and commit the workspace config file
+    with console.status("[cyan]Committing workspace config...[/cyan]"):
+        try:
+            subprocess.run(
+                ["git", "add", "grokcode.workspace.json"],
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                ["git", "commit", "-m", "Add workspace config"],
+                check=True,
+                capture_output=True,
+            )
+            commit_note = "  [dim]✓ grokcode.workspace.json committed to git[/dim]\n\n"
+        except subprocess.CalledProcessError:
+            commit_note = "  [yellow]⚠ Could not auto-commit (not a git repo or nothing to commit)[/yellow]\n\n"
+
     console.print(
         Panel(
             f"[bold green]Workspace created: {name}[/bold green]\n\n"
             f"[dim]Collection ID:[/dim]  {workspace_data['collection_id']}\n"
             f"[dim]Team ID:[/dim]        {team_id}\n\n"
-            "Next steps:\n"
-            "  1. [cyan]git add grokcode.workspace.json && git commit -m 'Add workspace config'[/cyan]\n"
-            "  2. [cyan]grokcode workspace index ./docs ./README.md[/cyan]",
+            + commit_note +
+            "Next step:\n"
+            "  [cyan]grokcode workspace index ./docs ./README.md[/cyan]",
             border_style="green",
             title="Workspace Initialized",
         )

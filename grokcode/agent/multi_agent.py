@@ -45,7 +45,7 @@ async def run_multi_agent(
     from grokcode.agent.grok_client import GrokClient
     from grokcode.agent.tool_registry import ToolRegistry
     from grokcode.tools.bash import BashTool
-    from grokcode.tools.fs import FS_TOOL_SCHEMAS, edit_file, read_directory, read_file, write_file
+    from grokcode.tools.fs import FS_TOOL_SCHEMAS, edit_file, glob_files, grep_files, read_directory, read_file, write_file
     from grokcode.utils.ui import console
 
     async with GrokClient(api_key=api_key, model=config.model, max_tokens=config.max_tokens) as client:
@@ -91,6 +91,8 @@ async def run_multi_agent(
                 registry.register("read_directory", lambda path, recursive=False: read_directory(path, recursive), FS_TOOL_SCHEMAS[1])
                 registry.register("write_file", lambda path, content: locked_write_file(path, content), FS_TOOL_SCHEMAS[2])
                 registry.register("edit_file", lambda path, old_str, new_str: locked_edit_file(path, old_str, new_str), FS_TOOL_SCHEMAS[3])
+                registry.register("glob_files", lambda pattern, directory=".": glob_files(pattern, directory), FS_TOOL_SCHEMAS[5])
+                registry.register("grep_files", lambda pattern, directory=".", file_glob="**/*": grep_files(pattern, directory, file_glob), FS_TOOL_SCHEMAS[6])
 
                 async with GrokClient(api_key=api_key, model=config.model, max_tokens=config.max_tokens) as sub_client:
                     agent = Agent(config=config, tool_registry=registry, grok_client=sub_client)

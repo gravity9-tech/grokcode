@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 
 import aiofiles
@@ -120,6 +121,64 @@ async def delete_file(path: str, auto_confirm: bool = False) -> str:
     return f"Deleted: {path}"
 
 
+async def glob_files(pattern: str, directory: str = ".") -> str:
+    """Find files matching a glob pattern under a directory."""
+    base = Path(directory)
+    if not base.exists():
+        return f"(Directory does not exist: {directory})"
+    if not base.is_dir():
+        raise ToolError(f"Not a directory: {directory}")
+
+    matches = sorted(base.glob(pattern))
+    if not matches:
+        return f"No files matched pattern '{pattern}' in '{directory}'"
+
+    cap = 200
+    lines = [str(p) for p in matches[:cap]]
+    result = "\n".join(lines)
+    if len(matches) > cap:
+        result += f"\n... ({len(matches) - cap} more results truncated)"
+    return result
+
+
+async def grep_files(
+    pattern: str,
+    directory: str = ".",
+    file_glob: str = "**/*",
+    max_results: int = 50,
+) -> str:
+    """Search file contents for a regex pattern. Returns filepath:lineno: line for each match."""
+    base = Path(directory)
+    if not base.exists():
+        return f"(Directory does not exist: {directory})"
+
+    try:
+        regex = re.compile(pattern)
+    except re.error as e:
+        raise ToolError(f"Invalid regex pattern '{pattern}': {e}")
+
+    results: list[str] = []
+    for file_path in sorted(base.glob(file_glob)):
+        if not file_path.is_file():
+            continue
+        if file_path.stat().st_size > MAX_FILE_SIZE:
+            continue
+        try:
+            text = file_path.read_text(errors="replace")
+        except OSError:
+            continue
+        for lineno, line in enumerate(text.splitlines(), 1):
+            if regex.search(line):
+                results.append(f"{file_path}:{lineno}: {line.rstrip()}")
+                if len(results) >= max_results:
+                    results.append(f"... (truncated at {max_results} results)")
+                    return "\n".join(results)
+
+    if not results:
+        return f"No matches for '{pattern}' in '{directory}' ({file_glob})"
+    return "\n".join(results)
+
+
 # ---------------------------------------------------------------------------
 # OpenAI-compatible tool schemas
 # ---------------------------------------------------------------------------
@@ -206,6 +265,64 @@ FS_TOOL_SCHEMAS: list[dict] = [
                     "path": {"type": "string", "description": "File path to delete"},
                 },
                 "required": ["path"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "glob_files",
+            "description": (
+                "Find files matching a glob pattern under a directory. "
+                "Use this to discover what files exist before reading or editing them. "
+                "Examples: '**/*.py' finds all Python files recursively, "
+                "'src/services/*.py' finds Python files directly in src/services/."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pattern": {
+                        "type": "string",
+                        "description": "Glob pattern to match (e.g. '**/*.py', 'src/**/*.ts')",
+                    },
+                    "directory": {
+                        "type": "string",
+                        "description": "Root directory to search in (default: current directory)",
+                        "default": ".",
+                    },
+                },
+                "required": ["pattern"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "grep_files",
+            "description": (
+                "Search file contents for a regex pattern. "
+                "Returns matching lines as 'filepath:lineno: line'. "
+                "Use this to find where classes, functions, or symbols are defined."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pattern": {
+                        "type": "string",
+                        "description": "Regular expression to search for",
+                    },
+                    "directory": {
+                        "type": "string",
+                        "description": "Root directory to search in (default: current directory)",
+                        "default": ".",
+                    },
+                    "file_glob": {
+                        "type": "string",
+                        "description": "Glob pattern to filter which files to search (default: '**/*')",
+                        "default": "**/*",
+                    },
+                },
+                "required": ["pattern"],
             },
         },
     },

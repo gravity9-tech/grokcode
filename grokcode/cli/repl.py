@@ -93,6 +93,11 @@ SLASH_HELP = {
         ("/mcp remove <name>",   "Remove an MCP server and its token"),
         ("/mcp test <name>",     "Test connection and list available tools"),
     ],
+    "Onboarding": [
+        ("/onboard",             "Generate an onboarding audio guide for this codebase"),
+        ("/onboard --no-audio",  "Generate onboarding script only (no audio)"),
+        ("/onboard --voice <v>", "Choose voice for audio (default: alloy)"),
+    ],
     "General": [
         ("/init",                "Create a GROKCODE.md with instructions for Grok"),
         ("/help",                "Show this help"),
@@ -810,6 +815,13 @@ def run_repl(config: AppConfig, api_key: str) -> None:
             except KeyboardInterrupt:
                 console.print("\n  [dim]Interrupted.[/dim]")
 
+        elif cmd == "/onboard" or cmd.startswith("/onboard "):
+            args = user_input[len("/onboard"):].split()
+            try:
+                asyncio.run(_handle_onboard(args, config, api_key))
+            except KeyboardInterrupt:
+                console.print("\n  [dim]Interrupted.[/dim]")
+
         else:
             try:
                 asyncio.run(_execute_task(user_input, api_key, config))
@@ -842,3 +854,10 @@ async def _execute_task(
         dry_run=dry_run,
         session_id=session_id,
     )
+
+
+async def _handle_onboard(args: list[str], config: AppConfig, api_key: str) -> None:
+    """Delegate to the onboard command handler."""
+    from grokcode.repl.commands.onboard import handle_onboard
+
+    await handle_onboard(args, config, api_key)
