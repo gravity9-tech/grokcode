@@ -40,7 +40,7 @@ async def export_session(
     files_snapshot: dict[str, str] = {}
     for path in session.files_modified:
         try:
-            async with aiofiles.open(path, "r", errors="replace") as f:
+            async with aiofiles.open(path, errors="replace") as f:
                 files_snapshot[path] = await f.read()
         except OSError:
             pass  # file may have been deleted or moved
@@ -62,11 +62,9 @@ async def import_session(
     """Load a HandoffBundle and return the embedded session."""
     path = handoffs_dir / f"{name}.json"
     if not path.exists():
-        raise FileNotFoundError(
-            f"Handoff not found: {name}\nLooked in: {path.resolve()}"
-        )
+        raise FileNotFoundError(f"Handoff not found: {name}\nLooked in: {path.resolve()}")
 
-    async with aiofiles.open(path, "r") as f:
+    async with aiofiles.open(path) as f:
         data = json.loads(await f.read())
 
     bundle = HandoffBundle(**data)

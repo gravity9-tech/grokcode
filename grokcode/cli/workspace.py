@@ -64,7 +64,7 @@ async def _workspace_init(name: str, team_id: str) -> None:
             workspace_data = await init_workspace(name=name, team_id=team_id, client=client)
         except Exception as e:
             print_error(f"Failed to create workspace: {e}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from e
 
     # Automatically stage and commit the workspace config file
     with console.status("[cyan]Committing workspace config...[/cyan]"):
@@ -87,9 +87,7 @@ async def _workspace_init(name: str, team_id: str) -> None:
         Panel(
             f"[bold green]Workspace created: {name}[/bold green]\n\n"
             f"[dim]Collection ID:[/dim]  {workspace_data['collection_id']}\n"
-            f"[dim]Team ID:[/dim]        {team_id}\n\n"
-            + commit_note +
-            "Next step:\n"
+            f"[dim]Team ID:[/dim]        {team_id}\n\n" + commit_note + "Next step:\n"
             "  [cyan]grokcode workspace index ./docs ./README.md[/cyan]",
             border_style="green",
             title="Workspace Initialized",
@@ -113,7 +111,7 @@ def workspace_index(
 
 async def _workspace_index(paths: list[Path], tag: str) -> None:
     from grokcode.workspace.collections_client import CollectionsClient
-    from grokcode.workspace.workspace import INDEXABLE_EXTENSIONS, _collect_files, index_paths
+    from grokcode.workspace.workspace import INDEXABLE_EXTENSIONS, _collect_files
 
     ws = _require_workspace_config()
     if not ws.collection_id:
@@ -123,9 +121,9 @@ async def _workspace_index(paths: list[Path], tag: str) -> None:
     # Collect files first for progress reporting
     all_files = _collect_files(paths)
     eligible = [
-        f for f in all_files
-        if f.stat().st_size <= 100 * 1024
-        and f.suffix.lower() in INDEXABLE_EXTENSIONS
+        f
+        for f in all_files
+        if f.stat().st_size <= 100 * 1024 and f.suffix.lower() in INDEXABLE_EXTENSIONS
     ]
     oversized = [f for f in all_files if f.stat().st_size > 100 * 1024]
 
@@ -164,7 +162,6 @@ async def _workspace_index(paths: list[Path], tag: str) -> None:
                     content=content,
                     metadata=metadata,
                 )
-                from grokcode.workspace.workspace import _persist_doc_id
 
                 uploaded_count += 1
             except Exception as e:
@@ -202,7 +199,7 @@ async def _workspace_list() -> None:
             docs = await client.list_documents(ws.collection_id)
     except Exception as e:
         print_error(f"Failed to list documents: {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
     finally:
         await client.close()
 
@@ -262,7 +259,7 @@ async def _workspace_remove(doc_id: str) -> None:
             )
     except Exception as e:
         print_error(f"Failed to remove document: {e}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
     finally:
         await client.close()
 
@@ -288,13 +285,11 @@ async def _workspace_status() -> None:
     client: CollectionsClient = _get_client()  # type: ignore[assignment]
 
     doc_count = 0
-    collection_name = ws.workspace
     error_msg = ""
 
     try:
         with console.status("[cyan]Checking workspace status...[/cyan]"):
-            collection = await client.get_collection(ws.collection_id)
-            collection_name = collection.name
+            await client.get_collection(ws.collection_id)
             docs = await client.list_documents(ws.collection_id)
             doc_count = len(docs)
     except Exception as e:

@@ -13,17 +13,35 @@ from grokcode.utils.ui import confirm, console
 logger = logging.getLogger(__name__)
 
 SAFE_PREFIXES = {
-    "pytest", "python", "pip", "cat", "ls", "git", "echo",
-    "find", "grep", "rg", "uv", "uvicorn", "mypy", "ruff",
-    "make", "cargo", "go", "node", "npm", "yarn", "pnpm",
+    "pytest",
+    "python",
+    "pip",
+    "cat",
+    "ls",
+    "git",
+    "echo",
+    "find",
+    "grep",
+    "rg",
+    "uv",
+    "uvicorn",
+    "mypy",
+    "ruff",
+    "make",
+    "cargo",
+    "go",
+    "node",
+    "npm",
+    "yarn",
+    "pnpm",
 }
 
 BLOCKLIST_PATTERNS = [
     r"rm\s+-rf\s+/",
     r"sudo\s+rm",
-    r":\(\)\s*\{",      # fork bomb
-    r">\s*/dev/sda",    # disk overwrite
-    r"mkfs\.",          # format disk
+    r":\(\)\s*\{",  # fork bomb
+    r">\s*/dev/sda",  # disk overwrite
+    r"mkfs\.",  # format disk
 ]
 
 _BLOCKLIST_RE = re.compile("|".join(BLOCKLIST_PATTERNS))
@@ -117,9 +135,9 @@ class BashTool:
                 timeout=timeout,
             )
             await proc.wait()
-        except asyncio.TimeoutError:
+        except TimeoutError:
             proc.kill()
-            raise ToolError(f"Command timed out after {timeout}s: {command!r}")
+            raise ToolError(f"Command timed out after {timeout}s: {command!r}") from None
 
         return BashResult(
             stdout="\n".join(stdout_lines),

@@ -8,7 +8,7 @@ from typing import Any
 
 import httpx
 
-from grokcode.agent.types import GrokResponse, RawToolCall, ToolCall, TokenUsage
+from grokcode.agent.types import GrokResponse, RawToolCall, TokenUsage, ToolCall
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class GrokClient:
     async def close(self) -> None:
         await self._client.aclose()
 
-    async def __aenter__(self) -> "GrokClient":
+    async def __aenter__(self) -> GrokClient:
         return self
 
     async def __aexit__(self, *_: Any) -> None:

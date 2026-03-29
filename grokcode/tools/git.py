@@ -106,7 +106,11 @@ GIT_TOOL_SCHEMAS: list[dict] = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "n": {"type": "integer", "description": "Number of commits to show", "default": 10},
+                    "n": {
+                        "type": "integer",
+                        "description": "Number of commits to show",
+                        "default": 10,
+                    },
                 },
                 "required": [],
             },

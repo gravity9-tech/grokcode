@@ -23,24 +23,46 @@ def _xai_logo() -> Text:
     """Build the xAI logo as a white Rich Text object with lowercase x."""
     logo = Text(justify="center")
     # Row 1  (x uses ╲ ╱ style for lowercase feel)
-    logo.append("██╗", style="white"); logo.append("  "); logo.append("██╗", style="white")
-    logo.append(" "); logo.append("█████╗", style="white"); logo.append("  "); logo.append("██╗\n", style="white")
+    logo.append("██╗", style="white")
+    logo.append("  ")
+    logo.append("██╗", style="white")
+    logo.append(" ")
+    logo.append("█████╗", style="white")
+    logo.append("  ")
+    logo.append("██╗\n", style="white")
     # Row 2
-    logo.append(" ╚██╗", style="white"); logo.append("██╔╝", style="white")
-    logo.append(" "); logo.append("██╔══██╗", style="white"); logo.append(" "); logo.append("██║\n", style="white")
+    logo.append(" ╚██╗", style="white")
+    logo.append("██╔╝", style="white")
+    logo.append(" ")
+    logo.append("██╔══██╗", style="white")
+    logo.append(" ")
+    logo.append("██║\n", style="white")
     # Row 3  (x narrows to a point — lowercase x mid)
     logo.append("  ╚██╔╝", style="white")
-    logo.append("  "); logo.append("███████║", style="white"); logo.append(" "); logo.append("██║\n", style="white")
+    logo.append("  ")
+    logo.append("███████║", style="white")
+    logo.append(" ")
+    logo.append("██║\n", style="white")
     # Row 4  (x widens back out)
     logo.append("  ██╔██╗", style="white")
-    logo.append("  "); logo.append("██╔══██║", style="white"); logo.append(" "); logo.append("██║\n", style="white")
+    logo.append("  ")
+    logo.append("██╔══██║", style="white")
+    logo.append(" ")
+    logo.append("██║\n", style="white")
     # Row 5
     logo.append(" ██╔╝ ██╗", style="white")
-    logo.append(" "); logo.append("██║  ██║", style="white"); logo.append(" "); logo.append("██║\n", style="white")
+    logo.append(" ")
+    logo.append("██║  ██║", style="white")
+    logo.append(" ")
+    logo.append("██║\n", style="white")
     # Row 6
     logo.append(" ╚═╝  ╚═╝", style="white")
-    logo.append(" "); logo.append("╚═╝  ╚═╝", style="white"); logo.append(" "); logo.append("╚═╝", style="white")
+    logo.append(" ")
+    logo.append("╚═╝  ╚═╝", style="white")
+    logo.append(" ")
+    logo.append("╚═╝", style="white")
     return logo
+
 
 GROKCODE_MD_TEMPLATE = """\
 # {project} — GrokCode Instructions
@@ -59,49 +81,49 @@ GROKCODE_MD_TEMPLATE = """\
 
 SLASH_HELP = {
     "Agent": [
-        ("<task>",               "Run an agentic coding task"),
-        ("/multi-agent <task>",  "Run task with parallel sub-agents"),
-        ("/dry-run <task>",      "Show what the agent would do without executing"),
-        ("/resume",              "Resume the last session"),
-        ("/resume <id>",         "Resume a specific session by ID"),
+        ("<task>", "Run an agentic coding task"),
+        ("/multi-agent <task>", "Run task with parallel sub-agents"),
+        ("/dry-run <task>", "Show what the agent would do without executing"),
+        ("/resume", "Resume the last session"),
+        ("/resume <id>", "Resume a specific session by ID"),
     ],
     "Search": [
-        ("/search <query>",      "Search the web via xAI"),
-        ("/xsearch <query>",     "Search X (Twitter) for real-time signals"),
+        ("/search <query>", "Search the web via xAI"),
+        ("/xsearch <query>", "Search X (Twitter) for real-time signals"),
     ],
     "Session": [
-        ("/sessions",            "List all saved sessions"),
-        ("/session export <n>",  "Export current session for teammate handoff"),
-        ("/session import <n>",  "Import a teammate's exported session"),
+        ("/sessions", "List all saved sessions"),
+        ("/session export <n>", "Export current session for teammate handoff"),
+        ("/session import <n>", "Import a teammate's exported session"),
     ],
     "Workspace": [
-        ("/workspace",           "Show workspace status"),
-        ("/workspace init <n>",  "Create a new team workspace"),
+        ("/workspace", "Show workspace status"),
+        ("/workspace init <n>", "Create a new team workspace"),
         ("/workspace index <p>", "Index files into the team knowledge base"),
-        ("/workspace list",      "List indexed documents"),
+        ("/workspace list", "List indexed documents"),
     ],
     "Config": [
-        ("/config",              "Show current configuration"),
-        ("/config model",        "Interactively select the Grok model"),
-        ("/config set <k> <v>",  "Set a config value (e.g. theme, max_tokens)"),
+        ("/config", "Show current configuration"),
+        ("/config model", "Interactively select the Grok model"),
+        ("/config set <k> <v>", "Set a config value (e.g. theme, max_tokens)"),
     ],
     "MCP Servers": [
-        ("/mcp",                 "Show configured MCP servers and auth status"),
-        ("/mcp catalog",         "Browse popular MCP servers to install"),
-        ("/mcp add <n> <url>",   "Add an MCP server (prompts for auth token)"),
-        ("/mcp auth <name>",     "Set or update the auth token for a server"),
-        ("/mcp remove <name>",   "Remove an MCP server and its token"),
-        ("/mcp test <name>",     "Test connection and list available tools"),
+        ("/mcp", "Show configured MCP servers and auth status"),
+        ("/mcp catalog", "Browse popular MCP servers to install"),
+        ("/mcp add <n> <url>", "Add an MCP server (prompts for auth token)"),
+        ("/mcp auth <name>", "Set or update the auth token for a server"),
+        ("/mcp remove <name>", "Remove an MCP server and its token"),
+        ("/mcp test <name>", "Test connection and list available tools"),
     ],
     "Onboarding": [
-        ("/onboard",             "Generate an onboarding audio guide for this codebase"),
-        ("/onboard --no-audio",  "Generate onboarding script only (no audio)"),
+        ("/onboard", "Generate an onboarding audio guide for this codebase"),
+        ("/onboard --no-audio", "Generate onboarding script only (no audio)"),
         ("/onboard --voice <v>", "Choose voice for audio (default: alloy)"),
     ],
     "General": [
-        ("/init",                "Create a GROKCODE.md with instructions for Grok"),
-        ("/help",                "Show this help"),
-        ("/exit, /quit",         "Exit GrokCode"),
+        ("/init", "Create a GROKCODE.md with instructions for Grok"),
+        ("/help", "Show this help"),
+        ("/exit, /quit", "Exit GrokCode"),
     ],
 }
 
@@ -153,8 +175,8 @@ def show_welcome(config: AppConfig, username: str) -> None:
 
     # ── Two-column table inside a branded panel ───────────────────────────────
     grid = Table.grid(expand=True, padding=(0, 2))
-    grid.add_column(ratio=2)   # left: logo + info
-    grid.add_column(ratio=3)   # right: tips + activity
+    grid.add_column(ratio=2)  # left: logo + info
+    grid.add_column(ratio=3)  # right: tips + activity
     grid.add_row(left, right)
 
     outer = Panel(
@@ -183,7 +205,9 @@ def _init_grokcode_md() -> None:
         return
     project = Path.cwd().name
     path.write_text(GROKCODE_MD_TEMPLATE.format(project=project))
-    console.print(f"  [{TEAL}]✓ Created GROKCODE.md — edit it to add project instructions for Grok[/]")
+    console.print(
+        f"  [{TEAL}]✓ Created GROKCODE.md — edit it to add project instructions for Grok[/]"
+    )
 
 
 def _show_sessions() -> None:
@@ -214,7 +238,9 @@ def _show_sessions() -> None:
 
 def _show_workspace(config: AppConfig) -> None:
     if not config.workspace_config:
-        console.print("  [dim]No workspace configured. Run:[/dim] grokcode workspace init --name <name>")
+        console.print(
+            "  [dim]No workspace configured. Run:[/dim] grokcode workspace init --name <name>"
+        )
         return
     ws = config.workspace_config
     console.print(
@@ -230,48 +256,55 @@ def _show_workspace(config: AppConfig) -> None:
 
 def _session_export(name: str) -> None:
     from grokcode.cli.session import _session_export as _do
+
     asyncio.run(_do(name=name, session_id=None))
 
 
 def _session_import(name: str) -> None:
     from grokcode.cli.session import _session_import as _do
+
     asyncio.run(_do(name=name))
 
 
 def _workspace_init_cmd(name: str) -> None:
     from grokcode.cli.workspace import _workspace_init as _do
+
     asyncio.run(_do(name=name, team_id="default"))
 
 
 def _workspace_index_cmd(paths_str: str) -> None:
     from grokcode.cli.workspace import _workspace_index as _do
+
     paths = [Path(p) for p in paths_str.split()]
     asyncio.run(_do(paths=paths, tag=""))
 
 
 def _workspace_list_cmd() -> None:
     from grokcode.cli.workspace import _workspace_list as _do
+
     asyncio.run(_do())
 
 
 def _show_config() -> None:
     from grokcode.cli.config_cmd import config_show
+
     config_show()
 
 
 def _config_set_cmd(key: str, value: str) -> None:
     from grokcode.cli.config_cmd import config_set
+
     config_set(key, value)
 
 
 AVAILABLE_MODELS = [
-    ("grok-4",            "Most capable — best for complex coding tasks"),
-    ("grok-3",            "Powerful and precise"),
-    ("grok-3-fast",       "Faster grok-3 with lower latency"),
-    ("grok-3-mini",       "Efficient — great for everyday tasks (default)"),
-    ("grok-3-mini-fast",  "Fastest response, lightweight tasks"),
-    ("grok-2-1212",       "Previous generation, stable"),
-    ("grok-2-vision-1212","Previous generation with vision support"),
+    ("grok-4", "Most capable — best for complex coding tasks"),
+    ("grok-3", "Powerful and precise"),
+    ("grok-3-fast", "Faster grok-3 with lower latency"),
+    ("grok-3-mini", "Efficient — great for everyday tasks (default)"),
+    ("grok-3-mini-fast", "Fastest response, lightweight tasks"),
+    ("grok-2-1212", "Previous generation, stable"),
+    ("grok-2-vision-1212", "Previous generation with vision support"),
 ]
 
 
@@ -292,7 +325,7 @@ def _select_model(config: AppConfig) -> None:
 
     console.print(f"\n  Current model: [bold {PINK}]{current}[/]\n")
     console.print(table)
-    console.print(f"\n  [dim]Enter a number to switch model, or press Enter to keep current:[/dim]")
+    console.print("\n  [dim]Enter a number to switch model, or press Enter to keep current:[/dim]")
 
     try:
         choice = input("  > ").strip()
@@ -308,7 +341,9 @@ def _select_model(config: AppConfig) -> None:
         if not (0 <= idx < len(AVAILABLE_MODELS)):
             raise ValueError
     except ValueError:
-        console.print(f"  [red]Invalid selection.[/red] Enter a number between 1 and {len(AVAILABLE_MODELS)}.")
+        console.print(
+            f"  [red]Invalid selection.[/red] Enter a number between 1 and {len(AVAILABLE_MODELS)}."
+        )
         return
 
     new_model = AVAILABLE_MODELS[idx][0]
@@ -330,43 +365,50 @@ def _select_model(config: AppConfig) -> None:
 MCP_CATALOG: list[tuple[str, str, str, str, str]] = [
     # (name, label, description, url, token_hint)
     (
-        "confluence", "Atlassian Confluence + Jira",
+        "confluence",
+        "Atlassian Confluence + Jira",
         "Pages, spaces, issues & PRs",
         "https://mcp.atlassian.com/v1/mcp",
         "Atlassian API token — generate at: id.atlassian.com/manage-profile/security/api-tokens",
     ),
     (
-        "github", "GitHub",
+        "github",
+        "GitHub",
         "Repos, PRs, issues & code search",
         "https://api.githubcopilot.com/mcp/",
         "GitHub personal access token — generate at: github.com/settings/tokens",
     ),
     (
-        "linear", "Linear",
+        "linear",
+        "Linear",
         "Issues, projects & cycles",
         "https://mcp.linear.app/sse",
         "Linear API key — generate at: linear.app/settings/api",
     ),
     (
-        "slack", "Slack",
+        "slack",
+        "Slack",
         "Messages, channels & search",
         "https://mcp.slack.com/v1/mcp",
         "Slack bot token (xoxb-...) — create at: api.slack.com/apps",
     ),
     (
-        "notion", "Notion",
+        "notion",
+        "Notion",
         "Pages, databases & blocks",
         "https://mcp.notion.com/v1/mcp",
         "Notion integration token — create at: notion.so/my-integrations",
     ),
     (
-        "sentry", "Sentry",
+        "sentry",
+        "Sentry",
         "Errors, issues & releases",
         "https://mcp.sentry.io/v1/mcp",
         "Sentry auth token — generate at: sentry.io/settings/auth-tokens/",
     ),
     (
-        "datadog", "Datadog",
+        "datadog",
+        "Datadog",
         "Metrics, logs & monitors",
         "https://mcp.datadoghq.com/v1/mcp",
         "Datadog API key — generate at: app.datadoghq.com/organization-settings/api-keys",
@@ -380,6 +422,7 @@ _MCP_TOKENS_PATH = Path.home() / ".grokcode" / "mcp_tokens.json"
 def _load_mcp_tokens() -> dict[str, str]:
     """Load {server_name: token} from ~/.grokcode/mcp_tokens.json."""
     import json
+
     if not _MCP_TOKENS_PATH.exists():
         return {}
     try:
@@ -392,6 +435,7 @@ def _save_mcp_tokens(tokens: dict[str, str]) -> None:
     """Persist tokens dict to ~/.grokcode/mcp_tokens.json (mode 600)."""
     import json
     import os
+
     _MCP_TOKENS_PATH.parent.mkdir(parents=True, exist_ok=True)
     _MCP_TOKENS_PATH.write_text(json.dumps(tokens, indent=2))
     os.chmod(_MCP_TOKENS_PATH, 0o600)
@@ -400,7 +444,9 @@ def _save_mcp_tokens(tokens: dict[str, str]) -> None:
 def _save_workspace_config(ws: object) -> None:
     """Persist updated WorkspaceConfig back to grokcode.workspace.json in cwd."""
     import json
+
     from grokcode.config.config import WORKSPACE_CONFIG_FILENAME, WorkspaceConfig
+
     wsc: WorkspaceConfig = ws  # type: ignore[assignment]
     path = Path.cwd() / WORKSPACE_CONFIG_FILENAME
     path.write_text(json.dumps(wsc.model_dump(), indent=2))
@@ -409,15 +455,18 @@ def _save_workspace_config(ws: object) -> None:
 def _prompt_token(name: str, hint: str) -> str | None:
     """Prompt the user for an auth token, showing where to get it."""
     import getpass as _gp
+
     console.print(f"\n  [bold {PINK}]Authentication required[/]")
     console.print(f"  [dim]{hint}[/dim]\n")
-    console.print(f"  [dim]Paste your token below (input is hidden):[/dim]")
+    console.print("  [dim]Paste your token below (input is hidden):[/dim]")
     try:
         token = _gp.getpass("  Token: ").strip()
     except (EOFError, KeyboardInterrupt):
         return None
     if not token:
-        console.print(f"  [dim]Skipped — no token entered. You can add it later with /mcp auth {name}[/dim]")
+        console.print(
+            f"  [dim]Skipped — no token entered. You can add it later with /mcp auth {name}[/dim]"
+        )
         return None
     return token
 
@@ -427,7 +476,7 @@ def _mcp_list(config: AppConfig) -> None:
     ws = config.workspace_config
     if not ws:
         console.print(
-            f"  [dim]No workspace configured. Run[/dim] /workspace init <name> [dim]first.[/dim]"
+            "  [dim]No workspace configured. Run[/dim] /workspace init <name> [dim]first.[/dim]"
         )
         return
 
@@ -435,9 +484,9 @@ def _mcp_list(config: AppConfig) -> None:
     console.print(f"\n  [bold {PINK}]MCP Servers[/] — {ws.workspace}\n")
 
     if not ws.mcp_servers:
-        console.print(f"  [dim]No MCP servers configured.[/dim]")
-        console.print(f"  [dim]Browse available servers with[/dim] /mcp catalog")
-        console.print(f"  [dim]Add one with[/dim] /mcp add <name> <url>")
+        console.print("  [dim]No MCP servers configured.[/dim]")
+        console.print("  [dim]Browse available servers with[/dim] /mcp catalog")
+        console.print("  [dim]Add one with[/dim] /mcp add <name> <url>")
         return
 
     table = Table(border_style="dim", expand=False, show_header=True, padding=(0, 2))
@@ -446,17 +495,12 @@ def _mcp_list(config: AppConfig) -> None:
     table.add_column("Auth", justify="center", width=8)
 
     for srv in ws.mcp_servers:
-        auth_status = f"[{TEAL}]✓[/]" if srv.name in tokens else f"[yellow]none[/]"
+        auth_status = f"[{TEAL}]✓[/]" if srv.name in tokens else "[yellow]none[/]"
         table.add_row(srv.name, srv.url, auth_status)
 
     console.print(table)
-    console.print(
-        f"\n  [dim]Auth ✓ = token saved · none = set with[/dim] /mcp auth <name>"
-    )
-    console.print(
-        f"  [dim]Test:[/dim] /mcp test <name>  "
-        f"[dim]· Remove:[/dim] /mcp remove <name>"
-    )
+    console.print("\n  [dim]Auth ✓ = token saved · none = set with[/dim] /mcp auth <name>")
+    console.print("  [dim]Test:[/dim] /mcp test <name>  [dim]· Remove:[/dim] /mcp remove <name>")
 
 
 def _mcp_catalog(config: AppConfig) -> None:
@@ -470,13 +514,13 @@ def _mcp_catalog(config: AppConfig) -> None:
     table.add_column("Service", style=f"bold {TEAL}", width=22)
     table.add_column("Description", style="white", width=32)
 
-    for i, (name, label, desc, url, _hint) in enumerate(MCP_CATALOG, 1):
+    for i, (name, label, desc, _url, _hint) in enumerate(MCP_CATALOG, 1):
         marker = f"[{TEAL}]✓[/] " if name in configured_names else "  "
         table.add_row(f"{marker}{i}", label, desc)
 
     console.print(f"\n  [bold {PINK}]Popular MCP Servers[/]\n")
     console.print(table)
-    console.print(f"\n  [dim]Enter a number to install, or press Enter to cancel:[/dim]")
+    console.print("\n  [dim]Enter a number to install, or press Enter to cancel:[/dim]")
 
     try:
         choice = input("  > ").strip()
@@ -491,7 +535,7 @@ def _mcp_catalog(config: AppConfig) -> None:
         if not (0 <= idx < len(MCP_CATALOG)):
             raise ValueError
     except ValueError:
-        console.print(f"  [red]Invalid selection.[/red]")
+        console.print("  [red]Invalid selection.[/red]")
         return
 
     name, label, _desc, url, hint = MCP_CATALOG[idx]
@@ -509,9 +553,7 @@ def _mcp_add(name: str, url: str, config: AppConfig, token_hint: str = "") -> No
 
     ws = config.workspace_config
     if not ws:
-        console.print(
-            f"  [red]No workspace configured.[/red] Run /workspace init <name> first."
-        )
+        console.print("  [red]No workspace configured.[/red] Run /workspace init <name> first.")
         return
 
     existing = [s.name for s in ws.mcp_servers]
@@ -538,7 +580,9 @@ def _mcp_add(name: str, url: str, config: AppConfig, token_hint: str = "") -> No
         auth_note = f"[yellow]⚠  No token — add later with:[/yellow] /mcp auth {name}"
 
     console.print(f"\n  [{TEAL}]✓ Added MCP server:[/] [bold]{name}[/] → {url}")
-    console.print(f"  [dim]Saved to grokcode.workspace.json (URL only — token is never committed)[/dim]")
+    console.print(
+        "  [dim]Saved to grokcode.workspace.json (URL only — token is never committed)[/dim]"
+    )
     console.print(f"  {auth_note}")
     console.print(f"  [dim]Test with:[/dim] /mcp test {name}")
 
@@ -547,12 +591,14 @@ def _mcp_auth(name: str, config: AppConfig) -> None:
     """Set or update the auth token for an already-configured MCP server."""
     ws = config.workspace_config
     if not ws:
-        console.print(f"  [red]No workspace configured.[/red]")
+        console.print("  [red]No workspace configured.[/red]")
         return
 
     srv = next((s for s in ws.mcp_servers if s.name == name), None)
     if not srv:
-        console.print(f"  [red]MCP server '{name}' not found.[/red] Add it first with /mcp add or /mcp catalog")
+        console.print(
+            f"  [red]MCP server '{name}' not found.[/red] Add it first with /mcp add or /mcp catalog"
+        )
         return
 
     # Find hint from catalog if available
@@ -573,7 +619,7 @@ def _mcp_remove(name: str, config: AppConfig) -> None:
     """Remove an MCP server and its token."""
     ws = config.workspace_config
     if not ws:
-        console.print(f"  [red]No workspace configured.[/red]")
+        console.print("  [red]No workspace configured.[/red]")
         return
 
     before = len(ws.mcp_servers)
@@ -603,7 +649,7 @@ def _mcp_test(name: str, config: AppConfig) -> None:
 
     ws = config.workspace_config
     if not ws:
-        console.print(f"  [red]No workspace configured.[/red]")
+        console.print("  [red]No workspace configured.[/red]")
         return
 
     srv = next((s for s in ws.mcp_servers if s.name == name), None)
@@ -621,7 +667,7 @@ def _mcp_test(name: str, config: AppConfig) -> None:
             f"  [yellow]⚠[/yellow]  No auth token for [bold]{name}[/bold]. "
             f"Set one with: /mcp auth {name}"
         )
-        console.print(f"  [dim]Attempting unauthenticated connection...[/dim]")
+        console.print("  [dim]Attempting unauthenticated connection...[/dim]")
 
     console.print(f"  [dim]Testing {name} → {srv.url}[/dim]")
 
@@ -644,7 +690,9 @@ def _mcp_test(name: str, config: AppConfig) -> None:
 
     table = Table(
         title=f"{name} — {len(tools)} tool(s) available",
-        border_style="dim", expand=False, padding=(0, 2),
+        border_style="dim",
+        expand=False,
+        padding=(0, 2),
     )
     table.add_column("Tool", style=f"bold {TEAL}", width=32)
     table.add_column("Description", style="dim")
@@ -673,8 +721,8 @@ def _safe_call(fn: object, *args: object) -> None:
 
 
 def _run_search(query: str, api_key: str, x: bool) -> None:
-    from grokcode.search.search import web_search, x_search
     from grokcode.cli.search import _print_results
+    from grokcode.search.search import web_search, x_search
 
     async def _do() -> None:
         label = "X" if x else "web"
@@ -697,7 +745,7 @@ def run_repl(config: AppConfig, api_key: str) -> None:
 
     while True:
         try:
-            user_input = input(f"\n> ").strip()
+            user_input = input("\n> ").strip()
         except (EOFError, KeyboardInterrupt):
             console.print(f"\n  [{TEAL}]Goodbye![/]")
             break
@@ -721,11 +769,11 @@ def run_repl(config: AppConfig, api_key: str) -> None:
             _show_sessions()
 
         elif cmd.startswith("/session export "):
-            name = user_input[len("/session export "):].strip()
+            name = user_input[len("/session export ") :].strip()
             _safe_call(_session_export, name)
 
         elif cmd.startswith("/session import "):
-            name = user_input[len("/session import "):].strip()
+            name = user_input[len("/session import ") :].strip()
             _safe_call(_session_import, name)
 
         elif cmd == "/workspace":
@@ -735,11 +783,11 @@ def run_repl(config: AppConfig, api_key: str) -> None:
             _safe_call(_workspace_list_cmd)
 
         elif cmd.startswith("/workspace init "):
-            name = user_input[len("/workspace init "):].strip()
+            name = user_input[len("/workspace init ") :].strip()
             _safe_call(_workspace_init_cmd, name)
 
         elif cmd.startswith("/workspace index "):
-            paths = user_input[len("/workspace index "):].strip()
+            paths = user_input[len("/workspace index ") :].strip()
             _safe_call(_workspace_index_cmd, paths)
 
         elif cmd in ("/mcp", "/mcp list"):
@@ -749,22 +797,22 @@ def run_repl(config: AppConfig, api_key: str) -> None:
             _mcp_catalog(config)
 
         elif cmd.startswith("/mcp add "):
-            parts = user_input[len("/mcp add "):].strip().split(None, 1)
+            parts = user_input[len("/mcp add ") :].strip().split(None, 1)
             if len(parts) == 2:
                 _mcp_add(parts[0], parts[1], config)
             else:
                 console.print("  [dim]Usage:[/dim] /mcp add <name> <url>")
 
         elif cmd.startswith("/mcp remove "):
-            name = user_input[len("/mcp remove "):].strip()
+            name = user_input[len("/mcp remove ") :].strip()
             _mcp_remove(name, config)
 
         elif cmd.startswith("/mcp auth "):
-            name = user_input[len("/mcp auth "):].strip()
+            name = user_input[len("/mcp auth ") :].strip()
             _mcp_auth(name, config)
 
         elif cmd.startswith("/mcp test "):
-            name = user_input[len("/mcp test "):].strip()
+            name = user_input[len("/mcp test ") :].strip()
             _mcp_test(name, config)
 
         elif cmd in ("/config model", "/config model "):
@@ -774,7 +822,7 @@ def run_repl(config: AppConfig, api_key: str) -> None:
             _safe_call(_show_config)
 
         elif cmd.startswith("/config set "):
-            parts = user_input[len("/config set "):].strip().split(None, 1)
+            parts = user_input[len("/config set ") :].strip().split(None, 1)
             if len(parts) == 2:
                 _safe_call(_config_set_cmd, parts[0], parts[1])
             else:
@@ -787,36 +835,36 @@ def run_repl(config: AppConfig, api_key: str) -> None:
                 console.print("\n  [dim]Interrupted.[/dim]")
 
         elif cmd.startswith("/resume "):
-            sid = user_input[len("/resume "):].strip()
+            sid = user_input[len("/resume ") :].strip()
             try:
                 asyncio.run(_execute_task("", api_key, config, session_id=sid))
             except KeyboardInterrupt:
                 console.print("\n  [dim]Interrupted.[/dim]")
 
         elif cmd.startswith("/search "):
-            query = user_input[len("/search "):].strip()
+            query = user_input[len("/search ") :].strip()
             _run_search(query, api_key, x=False)
 
         elif cmd.startswith("/xsearch "):
-            query = user_input[len("/xsearch "):].strip()
+            query = user_input[len("/xsearch ") :].strip()
             _run_search(query, api_key, x=True)
 
         elif cmd.startswith("/multi-agent "):
-            task = user_input[len("/multi-agent "):].strip()
+            task = user_input[len("/multi-agent ") :].strip()
             try:
                 asyncio.run(_execute_task(task, api_key, config, multi_agent=True))
             except KeyboardInterrupt:
                 console.print("\n  [dim]Interrupted.[/dim]")
 
         elif cmd.startswith("/dry-run "):
-            task = user_input[len("/dry-run "):].strip()
+            task = user_input[len("/dry-run ") :].strip()
             try:
                 asyncio.run(_execute_task(task, api_key, config, dry_run=True))
             except KeyboardInterrupt:
                 console.print("\n  [dim]Interrupted.[/dim]")
 
         elif cmd == "/onboard" or cmd.startswith("/onboard "):
-            args = user_input[len("/onboard"):].split()
+            args = user_input[len("/onboard") :].split()
             try:
                 asyncio.run(_handle_onboard(args, config, api_key))
             except KeyboardInterrupt:
@@ -827,7 +875,7 @@ def run_repl(config: AppConfig, api_key: str) -> None:
                 asyncio.run(_execute_task(user_input, api_key, config))
             except KeyboardInterrupt:
                 console.print(
-                    f"\n  [dim]Interrupted — session saved. Type[/dim] /resume [dim]to continue.[/dim]"
+                    "\n  [dim]Interrupted — session saved. Type[/dim] /resume [dim]to continue.[/dim]"
                 )
 
 

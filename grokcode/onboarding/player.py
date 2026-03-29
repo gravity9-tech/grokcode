@@ -29,7 +29,5 @@ def play_audio(path: str) -> bool:
         if result.returncode == 0:
             return True
 
-    console.print(
-        f"  [dim]Could not auto-play audio. Open {path} manually to listen.[/dim]"
-    )
+    console.print(f"  [dim]Could not auto-play audio. Open {path} manually to listen.[/dim]")
     return False

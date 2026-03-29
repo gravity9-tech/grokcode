@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from rich.panel import Panel
 from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
 
-from grokcode.utils.ui import console, print_error, print_success, print_warning
+from grokcode.utils.ui import console, print_error, print_success
 
 if TYPE_CHECKING:
     from grokcode.config.config import AppConfig
@@ -21,7 +21,7 @@ saves it as onboarding.md, converts it to speech via the xAI Audio API,
 saves it as onboarding.mp3, and plays it in the terminal."""
 
 
-async def handle_onboard(args: list[str], config: "AppConfig", api_key: str) -> None:
+async def handle_onboard(args: list[str], config: AppConfig, api_key: str) -> None:
     """Run the full onboarding pipeline: analyse → script → save md → audio → play."""
     if "--help" in args or "-h" in args:
         console.print(HELP_TEXT)
@@ -42,8 +42,7 @@ async def handle_onboard(args: list[str], config: "AppConfig", api_key: str) -> 
 
     console.print(
         Panel(
-            f"[bold]GrokCode Onboarding Generator[/bold]\n"
-            f"[dim]Analysing:[/dim] {path}",
+            f"[bold]GrokCode Onboarding Generator[/bold]\n[dim]Analysing:[/dim] {path}",
             border_style="cyan",
         )
     )
@@ -92,7 +91,9 @@ async def handle_onboard(args: list[str], config: "AppConfig", api_key: str) -> 
         )
     )
     if word_count > 200:
-        console.print(f"  [yellow]⚠ Script is {word_count} words (over limit). Saved as-is.[/yellow]")
+        console.print(
+            f"  [yellow]⚠ Script is {word_count} words (over limit). Saved as-is.[/yellow]"
+        )
 
     # ── Step 3: Save onboarding.md ───────────────────────────────────────────
     md_path = path / "onboarding.md"

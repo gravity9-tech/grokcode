@@ -45,10 +45,20 @@ async def run_multi_agent(
     from grokcode.agent.grok_client import GrokClient
     from grokcode.agent.tool_registry import ToolRegistry
     from grokcode.tools.bash import BashTool
-    from grokcode.tools.fs import FS_TOOL_SCHEMAS, edit_file, glob_files, grep_files, read_directory, read_file, write_file
+    from grokcode.tools.fs import (
+        FS_TOOL_SCHEMAS,
+        edit_file,
+        glob_files,
+        grep_files,
+        read_directory,
+        read_file,
+        write_file,
+    )
     from grokcode.utils.ui import console
 
-    async with GrokClient(api_key=api_key, model=config.model, max_tokens=config.max_tokens) as client:
+    async with GrokClient(
+        api_key=api_key, model=config.model, max_tokens=config.max_tokens
+    ) as client:
         # Step 1: Orchestrator decomposes the task
         console.print("  [cyan]●[/cyan] Orchestrator: decomposing task...")
         subtasks = await _decompose_task(task, config, client)
@@ -84,17 +94,42 @@ async def run_multi_agent(
 
         async def run_subtask(subtask: SubtaskPlan) -> list[str]:
             async with semaphore:
-                console.print(f"  [yellow]→[/yellow] Starting sub-agent: {subtask.description[:60]}")
-                bash_tool = BashTool(auto_confirm=auto_confirm)
+                console.print(
+                    f"  [yellow]→[/yellow] Starting sub-agent: {subtask.description[:60]}"
+                )
                 registry = ToolRegistry()
                 registry.register("read_file", lambda path: read_file(path), FS_TOOL_SCHEMAS[0])
-                registry.register("read_directory", lambda path, recursive=False: read_directory(path, recursive), FS_TOOL_SCHEMAS[1])
-                registry.register("write_file", lambda path, content: locked_write_file(path, content), FS_TOOL_SCHEMAS[2])
-                registry.register("edit_file", lambda path, old_str, new_str: locked_edit_file(path, old_str, new_str), FS_TOOL_SCHEMAS[3])
-                registry.register("glob_files", lambda pattern, directory=".": glob_files(pattern, directory), FS_TOOL_SCHEMAS[5])
-                registry.register("grep_files", lambda pattern, directory=".", file_glob="**/*": grep_files(pattern, directory, file_glob), FS_TOOL_SCHEMAS[6])
+                registry.register(
+                    "read_directory",
+                    lambda path, recursive=False: read_directory(path, recursive),
+                    FS_TOOL_SCHEMAS[1],
+                )
+                registry.register(
+                    "write_file",
+                    lambda path, content: locked_write_file(path, content),
+                    FS_TOOL_SCHEMAS[2],
+                )
+                registry.register(
+                    "edit_file",
+                    lambda path, old_str, new_str: locked_edit_file(path, old_str, new_str),
+                    FS_TOOL_SCHEMAS[3],
+                )
+                registry.register(
+                    "glob_files",
+                    lambda pattern, directory=".": glob_files(pattern, directory),
+                    FS_TOOL_SCHEMAS[5],
+                )
+                registry.register(
+                    "grep_files",
+                    lambda pattern, directory=".", file_glob="**/*": grep_files(
+                        pattern, directory, file_glob
+                    ),
+                    FS_TOOL_SCHEMAS[6],
+                )
 
-                async with GrokClient(api_key=api_key, model=config.model, max_tokens=config.max_tokens) as sub_client:
+                async with GrokClient(
+                    api_key=api_key, model=config.model, max_tokens=config.max_tokens
+                ) as sub_client:
                     agent = Agent(config=config, tool_registry=registry, grok_client=sub_client)
                     files: list[str] = []
                     async for event in agent.run(
@@ -105,7 +140,9 @@ async def run_multi_agent(
                         if hasattr(event, "files_touched"):
                             files.extend(event.files_touched)  # type: ignore[attr-defined]
                         if isinstance(event, DoneEvent):
-                            console.print(f"  [green]✓[/green] Sub-agent done: {subtask.description[:50]}")
+                            console.print(
+                                f"  [green]✓[/green] Sub-agent done: {subtask.description[:50]}"
+                            )
                         elif isinstance(event, ErrorEvent):
                             console.print(f"  [red]✗[/red] Sub-agent error: {event.message[:80]}")
                     return files
@@ -165,7 +202,7 @@ async def _decompose_task(
             full_response += chunk.content
 
     # Strip markdown fences
-    cleaned = re.sub(r"```(?:json)?\s*", "", full_response).strip().rstrip("```").strip()
+    cleaned = re.sub(r"```(?:json)?\s*", "", full_response).strip().removesuffix("```").strip()
 
     try:
         data = json.loads(cleaned)

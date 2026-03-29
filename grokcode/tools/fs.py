@@ -22,7 +22,7 @@ async def read_file(path: str) -> str:
         raise ToolError(f"File not found: {path}")
     if p.stat().st_size > MAX_FILE_SIZE:
         raise ToolError(f"File too large (>{MAX_FILE_SIZE // 1024}KB): {path}")
-    async with aiofiles.open(p, "r", errors="replace") as f:
+    async with aiofiles.open(p, errors="replace") as f:
         return await f.read()
 
 
@@ -68,11 +68,9 @@ async def edit_file(path: str, old_str: str, new_str: str) -> str:
     """Replace exactly one occurrence of old_str with new_str in a file."""
     p = Path(path)
     if not p.exists():
-        raise ToolError(
-            f"File not found: {path}. Use write_file to create new files."
-        )
+        raise ToolError(f"File not found: {path}. Use write_file to create new files.")
 
-    async with aiofiles.open(p, "r", errors="replace") as f:
+    async with aiofiles.open(p, errors="replace") as f:
         content = await f.read()
 
     count = content.count(old_str)
@@ -155,7 +153,7 @@ async def grep_files(
     try:
         regex = re.compile(pattern)
     except re.error as e:
-        raise ToolError(f"Invalid regex pattern '{pattern}': {e}")
+        raise ToolError(f"Invalid regex pattern '{pattern}': {e}") from e
 
     results: list[str] = []
     for file_path in sorted(base.glob(file_glob)):

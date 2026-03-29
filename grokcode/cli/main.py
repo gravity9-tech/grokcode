@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import sys
 import traceback
 from pathlib import Path
 from typing import Annotated
@@ -10,7 +9,7 @@ import typer
 from rich.panel import Panel
 
 from grokcode.cli.config_cmd import config_app
-from grokcode.utils.ui import console, print_error, print_warning
+from grokcode.utils.ui import console, print_error
 
 app = typer.Typer(
     name="grokcode",
@@ -31,6 +30,7 @@ def default(ctx: typer.Context) -> None:
         config = get_config()
         api_key = get_api_key() or config.xai_api_key or ""
         run_repl(config, api_key)
+
 
 app.add_typer(config_app, name="config")
 
@@ -64,9 +64,7 @@ def run(
     multi_agent: Annotated[
         bool, typer.Option("--multi-agent", "-m", help="Use multi-agent for complex tasks")
     ] = False,
-    max_agents: Annotated[
-        int, typer.Option("--max-agents", help="Max parallel sub-agents")
-    ] = 5,
+    max_agents: Annotated[int, typer.Option("--max-agents", help="Max parallel sub-agents")] = 5,
     auto_confirm: Annotated[
         bool, typer.Option("--auto-confirm", "-y", help="Auto-confirm all prompts")
     ] = False,
@@ -101,7 +99,7 @@ def run(
         console.print("\n  [dim]Interrupted — session saved. Resume with:[/dim] grokcode --resume")
     except Exception as e:
         _handle_top_level_error(e, debug)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from e
 
 
 async def _run_task(
@@ -152,13 +150,35 @@ async def _run_task(
         )
         return
 
-    from grokcode.agent.agent import Agent, DoneEvent, ErrorEvent, ThinkingEvent, ToolCallEvent, ToolResultEvent
+    from grokcode.agent.agent import (
+        Agent,
+        DoneEvent,
+        ErrorEvent,
+        ThinkingEvent,
+        ToolCallEvent,
+        ToolResultEvent,
+    )
     from grokcode.agent.grok_client import GrokClient
     from grokcode.agent.tool_registry import ToolRegistry
     from grokcode.session.session import Session, get_last_session, load_session, save_session
     from grokcode.tools.bash import BashTool
-    from grokcode.tools.fs import FS_TOOL_SCHEMAS, delete_file, edit_file, read_directory, read_file, write_file
-    from grokcode.tools.git import GIT_TOOL_SCHEMAS, git_add, git_commit, git_create_branch, git_diff, git_log, git_status
+    from grokcode.tools.fs import (
+        FS_TOOL_SCHEMAS,
+        delete_file,
+        edit_file,
+        read_directory,
+        read_file,
+        write_file,
+    )
+    from grokcode.tools.git import (
+        GIT_TOOL_SCHEMAS,
+        git_add,
+        git_commit,
+        git_create_branch,
+        git_diff,
+        git_log,
+        git_status,
+    )
     from grokcode.utils.ui import print_step, print_success, print_token_usage
 
     # Load prior session if resuming
@@ -180,35 +200,63 @@ async def _run_task(
 
     # File system tools
     registry.register("read_file", lambda path: read_file(path), FS_TOOL_SCHEMAS[0])
-    registry.register("read_directory", lambda path, recursive=False: read_directory(path, recursive), FS_TOOL_SCHEMAS[1])
-    registry.register("write_file", lambda path, content: write_file(path, content, auto_confirm), FS_TOOL_SCHEMAS[2])
-    registry.register("edit_file", lambda path, old_str, new_str: edit_file(path, old_str, new_str), FS_TOOL_SCHEMAS[3])
-    registry.register("delete_file", lambda path: delete_file(path, auto_confirm), FS_TOOL_SCHEMAS[4])
+    registry.register(
+        "read_directory",
+        lambda path, recursive=False: read_directory(path, recursive),
+        FS_TOOL_SCHEMAS[1],
+    )
+    registry.register(
+        "write_file",
+        lambda path, content: write_file(path, content, auto_confirm),
+        FS_TOOL_SCHEMAS[2],
+    )
+    registry.register(
+        "edit_file",
+        lambda path, old_str, new_str: edit_file(path, old_str, new_str),
+        FS_TOOL_SCHEMAS[3],
+    )
+    registry.register(
+        "delete_file", lambda path: delete_file(path, auto_confirm), FS_TOOL_SCHEMAS[4]
+    )
 
     # Bash tool
-    registry.register("execute_bash", lambda command, timeout=30: bash_tool.execute(command, timeout), {
-        "type": "function",
-        "function": {
-            "name": "execute_bash",
-            "description": "Execute a shell command. Use for running tests, builds, installs.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "command": {"type": "string", "description": "Shell command to run"},
-                    "timeout": {"type": "integer", "description": "Timeout in seconds", "default": 30},
+    registry.register(
+        "execute_bash",
+        lambda command, timeout=30: bash_tool.execute(command, timeout),
+        {
+            "type": "function",
+            "function": {
+                "name": "execute_bash",
+                "description": "Execute a shell command. Use for running tests, builds, installs.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "command": {"type": "string", "description": "Shell command to run"},
+                        "timeout": {
+                            "type": "integer",
+                            "description": "Timeout in seconds",
+                            "default": 30,
+                        },
+                    },
+                    "required": ["command"],
                 },
-                "required": ["command"],
             },
         },
-    })
+    )
 
     # Git tools
     registry.register("git_status", lambda: git_status(bash_tool), GIT_TOOL_SCHEMAS[0])
     registry.register("git_diff", lambda path=None: git_diff(bash_tool, path), GIT_TOOL_SCHEMAS[1])
     registry.register("git_add", lambda paths: git_add(bash_tool, paths), GIT_TOOL_SCHEMAS[2])
-    registry.register("git_commit", lambda message: git_commit(bash_tool, message, auto_confirm), GIT_TOOL_SCHEMAS[3])
+    registry.register(
+        "git_commit",
+        lambda message: git_commit(bash_tool, message, auto_confirm),
+        GIT_TOOL_SCHEMAS[3],
+    )
     registry.register("git_log", lambda n=10: git_log(bash_tool, n), GIT_TOOL_SCHEMAS[4])
-    registry.register("git_create_branch", lambda name: git_create_branch(bash_tool, name), GIT_TOOL_SCHEMAS[5])
+    registry.register(
+        "git_create_branch", lambda name: git_create_branch(bash_tool, name), GIT_TOOL_SCHEMAS[5]
+    )
 
     # Search tools (always available — uses xAI native search)
     from grokcode.search.search import (
@@ -225,35 +273,43 @@ async def _run_task(
         results = await x_search(query=query, api_key=api_key)
         return format_results_as_tool_output(results)
 
-    registry.register("web_search", _web_search, {
-        "type": "function",
-        "function": {
-            "name": "web_search",
-            "description": "Search the web for documentation, libraries, error messages, or Stack Overflow answers.",
-            "parameters": {
-                "type": "object",
-                "properties": {"query": {"type": "string", "description": "Search query"}},
-                "required": ["query"],
+    registry.register(
+        "web_search",
+        _web_search,
+        {
+            "type": "function",
+            "function": {
+                "name": "web_search",
+                "description": "Search the web for documentation, libraries, error messages, or Stack Overflow answers.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {"query": {"type": "string", "description": "Search query"}},
+                    "required": ["query"],
+                },
             },
         },
-    })
-    registry.register("x_search", _x_search, {
-        "type": "function",
-        "function": {
-            "name": "x_search",
-            "description": "Search X (Twitter) for real-time ecosystem signals, breaking changes, or community discussion.",
-            "parameters": {
-                "type": "object",
-                "properties": {"query": {"type": "string", "description": "Search query"}},
-                "required": ["query"],
+    )
+    registry.register(
+        "x_search",
+        _x_search,
+        {
+            "type": "function",
+            "function": {
+                "name": "x_search",
+                "description": "Search X (Twitter) for real-time ecosystem signals, breaking changes, or community discussion.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {"query": {"type": "string", "description": "Search query"}},
+                    "required": ["query"],
+                },
             },
         },
-    })
+    )
 
     # Workspace search tool (only if workspace is configured)
     if config.workspace_config and config.workspace_config.collection_id:
-        from grokcode.workspace.collections_client import CollectionsClient
         from grokcode.search.search import format_results_as_tool_output
+        from grokcode.workspace.collections_client import CollectionsClient
 
         _collection_id = config.workspace_config.collection_id
 
@@ -273,30 +329,40 @@ async def _run_task(
                 lines.append(f"[Source: {source}]\n{r.content[:800]}")
             return "\n\n".join(lines)
 
-        registry.register("search_workspace", _search_workspace, {
-            "type": "function",
-            "function": {
-                "name": "search_workspace",
-                "description": (
-                    "Search the team's shared knowledge base (architecture docs, ADRs, coding standards). "
-                    "Use this before implementing anything to ground your response in team conventions."
-                ),
-                "parameters": {
-                    "type": "object",
-                    "properties": {"query": {"type": "string", "description": "What to search for"}},
-                    "required": ["query"],
+        registry.register(
+            "search_workspace",
+            _search_workspace,
+            {
+                "type": "function",
+                "function": {
+                    "name": "search_workspace",
+                    "description": (
+                        "Search the team's shared knowledge base (architecture docs, ADRs, coding standards). "
+                        "Use this before implementing anything to ground your response in team conventions."
+                    ),
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {"type": "string", "description": "What to search for"}
+                        },
+                        "required": ["query"],
+                    },
                 },
             },
-        })
+        )
 
-    async with GrokClient(api_key=api_key, model=config.model, max_tokens=config.max_tokens) as client:
+    async with GrokClient(
+        api_key=api_key, model=config.model, max_tokens=config.max_tokens
+    ) as client:
         agent = Agent(config=config, tool_registry=registry, grok_client=client)
         session = Session.new(task=task)
         total_input = 0
         total_output = 0
 
         try:
-            async for event in agent.run(task=task, history=history, auto_confirm=auto_confirm, dry_run=dry_run):
+            async for event in agent.run(
+                task=task, history=history, auto_confirm=auto_confirm, dry_run=dry_run
+            ):
                 if isinstance(event, ThinkingEvent):
                     if event.text:
                         console.print(event.text, end="", highlight=False)
@@ -305,7 +371,9 @@ async def _run_task(
                 elif isinstance(event, ToolResultEvent):
                     session.files_modified.extend(event.files_touched)
                     if event.tool_name in ("write_file", "edit_file", "delete_file"):
-                        print_step("✎", f"Modified: {', '.join(event.files_touched)}", style="green")
+                        print_step(
+                            "✎", f"Modified: {', '.join(event.files_touched)}", style="green"
+                        )
                 elif isinstance(event, DoneEvent):
                     console.print()  # newline after streaming
                     if event.text:
@@ -329,9 +397,7 @@ async def _run_task(
         finally:
             await save_session(session)
             if session.status == "interrupted":
-                console.print(
-                    f"  [dim]Session saved — resume with:[/dim] grokcode --resume"
-                )
+                console.print("  [dim]Session saved — resume with:[/dim] grokcode --resume")
 
 
 def _fmt_args(args: dict) -> str:
@@ -380,9 +446,9 @@ def cmd_xsearch(
 
 
 async def _standalone_search(query: str, tool: str, max_results: int) -> None:
-    from grokcode.config.keychain import get_api_key
-    from grokcode.search.search import format_results_as_tool_output, web_search, x_search
     from grokcode.cli.search import _print_results
+    from grokcode.config.keychain import get_api_key
+    from grokcode.search.search import web_search, x_search
 
     api_key = get_api_key()
     if not api_key:
@@ -398,7 +464,7 @@ async def _standalone_search(query: str, tool: str, max_results: int) -> None:
                 results = await web_search(query=query, api_key=api_key, max_results=max_results)
         except Exception as e:
             print_error(f"Search failed: {e}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from e
 
     _print_results(results, title=f'{label} Search: "{query}"')
 

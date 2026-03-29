@@ -114,8 +114,6 @@ class Agent:
             # Accumulate the full response from streaming
             accumulated_content = ""
             accumulated_tool_calls = []
-            final_usage: TokenUsage | None = None
-            finish_reason: str | None = None
 
             try:
                 async for chunk in self.client.chat(messages, tools=tools, stream=stream):
@@ -124,15 +122,11 @@ class Agent:
                         yield ThinkingEvent(text=chunk.content)
                     if chunk.tool_calls:
                         accumulated_tool_calls = chunk.tool_calls
-                        finish_reason = chunk.finish_reason
                     if chunk.usage:
-                        final_usage = chunk.usage
                         total_usage = TokenUsage(
                             input_tokens=total_usage.input_tokens + chunk.usage.input_tokens,
                             output_tokens=total_usage.output_tokens + chunk.usage.output_tokens,
                         )
-                    if chunk.finish_reason:
-                        finish_reason = chunk.finish_reason
 
             except Exception as exc:
                 yield ErrorEvent(message=f"API error: {exc}")
@@ -192,7 +186,9 @@ class Agent:
 
         # Exhausted max iterations
         self.message_history = [Message(**m) for m in messages[1:]]
-        yield ErrorEvent(message=f"Max iterations ({MAX_ITERATIONS}) reached without completing task.")
+        yield ErrorEvent(
+            message=f"Max iterations ({MAX_ITERATIONS}) reached without completing task."
+        )
 
 
 async def _get_git_branch() -> str | None:

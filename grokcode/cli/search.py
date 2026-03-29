@@ -17,8 +17,7 @@ def _get_api_key() -> str:
     key = get_api_key()
     if not key:
         print_error(
-            "xAI API key not found.\n"
-            "Run: [bold]grokcode config set xai_api_key <your-key>[/bold]"
+            "xAI API key not found.\nRun: [bold]grokcode config set xai_api_key <your-key>[/bold]"
         )
         raise typer.Exit(1)
     return key
@@ -42,7 +41,7 @@ async def _search_web(query: str, max_results: int) -> None:
             results = await web_search(query=query, api_key=api_key, max_results=max_results)
         except Exception as e:
             print_error(f"Search failed: {e}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from e
 
     _print_results(results, title=f'Web Search: "{query}"')
 
@@ -65,7 +64,7 @@ async def _search_x(query: str, max_results: int) -> None:
             results = await x_search(query=query, api_key=api_key, max_results=max_results)
         except Exception as e:
             print_error(f"X search failed: {e}")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from e
 
     _print_results(results, title=f'X Search: "{query}"')
 

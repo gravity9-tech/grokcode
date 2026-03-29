@@ -3,18 +3,51 @@ from __future__ import annotations
 from pathlib import Path
 
 INCLUDE_EXTENSIONS = {
-    ".py", ".ts", ".tsx", ".js", ".jsx", ".java", ".go", ".rs", ".rb",
-    ".cs", ".cpp", ".c", ".h", ".md", ".json", ".yaml", ".yml", ".toml",
+    ".py",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    ".java",
+    ".go",
+    ".rs",
+    ".rb",
+    ".cs",
+    ".cpp",
+    ".c",
+    ".h",
+    ".md",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".toml",
 }
 INCLUDE_FILENAMES = {".env.example", "Dockerfile", "docker-compose.yml"}
 SKIP_DIRS = {
-    ".git", "node_modules", "__pycache__", ".venv", "venv", "env",
-    "dist", "build", ".next", ".nuxt", "target", "vendor", ".grokcode",
+    ".git",
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "env",
+    "dist",
+    "build",
+    ".next",
+    ".nuxt",
+    "target",
+    "vendor",
+    ".grokcode",
 }
 MAX_FILE_SIZE = 50 * 1024  # 50 KB
 KEY_FILES = {
-    "README.md", "pyproject.toml", "package.json", "go.mod", "Cargo.toml",
-    "pom.xml", "Dockerfile", "docker-compose.yml",
+    "README.md",
+    "pyproject.toml",
+    "package.json",
+    "go.mod",
+    "Cargo.toml",
+    "pom.xml",
+    "Dockerfile",
+    "docker-compose.yml",
 }
 KEY_FILE_LINES = 100
 OTHER_FILE_LINES = 30
@@ -107,7 +140,9 @@ def build_summary(path: Path, files: list[Path]) -> str:
             except ValueError:
                 rel = Path(f.name)
             try:
-                lines = f.read_text(encoding="utf-8", errors="ignore").splitlines()[:OTHER_FILE_LINES]
+                lines = f.read_text(encoding="utf-8", errors="ignore").splitlines()[
+                    :OTHER_FILE_LINES
+                ]
                 sections.append(f"### {rel}\n```\n" + "\n".join(lines) + "\n```")
             except OSError:
                 pass

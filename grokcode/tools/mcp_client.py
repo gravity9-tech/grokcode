@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Remote MCP (Model Context Protocol) tool client.
 
@@ -8,6 +6,8 @@ available to the agent. Implements the MCP HTTP transport spec:
   GET  <server_url>/tools          → list available tools + schemas
   POST <server_url>/tools/<name>   → call a tool, return string result
 """
+
+from __future__ import annotations
 
 import logging
 from typing import Any
@@ -71,9 +71,7 @@ async def call_mcp_tool(
         async with httpx.AsyncClient(timeout=CALL_TIMEOUT) as client:
             resp = await client.post(url, json=args, headers=headers)
             if resp.status_code not in (200, 201):
-                raise McpError(
-                    f"MCP tool call failed: {resp.status_code} — {resp.text[:300]}"
-                )
+                raise McpError(f"MCP tool call failed: {resp.status_code} — {resp.text[:300]}")
             data = resp.json()
             # Normalise response: extract content string
             if isinstance(data, str):
@@ -96,6 +94,7 @@ async def register_mcp_servers(
     Returns the count of tools registered.
     """
     from functools import partial
+
     from grokcode.agent.tool_registry import ToolRegistry
     from grokcode.config.config import McpServer
 
@@ -115,20 +114,21 @@ async def register_mcp_servers(
             # Create a bound dispatcher for this server + tool
             dispatcher = partial(call_mcp_tool, srv.url, name)
 
-            async def _dispatch(**kwargs: Any) -> str:
-                return await dispatcher(args=kwargs)
+            def _make_dispatch(d: Any) -> Any:
+                async def _dispatch(**kwargs: Any) -> str:
+                    return await d(args=kwargs)
+
+                return _dispatch
 
             reg.register(
                 name=f"mcp_{srv.name}_{name}",
-                fn=_dispatch,
+                fn=_make_dispatch(dispatcher),
                 schema={
                     "type": "function",
                     "function": {
                         **fn_schema,
                         "name": f"mcp_{srv.name}_{name}",
-                        "description": (
-                            f"[{srv.name}] {fn_schema.get('description', '')}"
-                        ),
+                        "description": (f"[{srv.name}] {fn_schema.get('description', '')}"),
                     },
                 },
             )

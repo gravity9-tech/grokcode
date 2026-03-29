@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import difflib
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator
 
 from rich.console import Console
 from rich.live import Live
@@ -81,7 +81,7 @@ class AgentLiveDisplay:
         self._text = Text()
         self._live = Live(self._text, console=console, refresh_per_second=10, transient=False)
 
-    def __enter__(self) -> "AgentLiveDisplay":
+    def __enter__(self) -> AgentLiveDisplay:
         self._live.__enter__()
         return self
 
@@ -103,7 +103,7 @@ class MultiAgentLiveDisplay:
         self._live = Live(self._table, console=console, refresh_per_second=4)
         self._rows: dict[str, int] = {}  # agent_id -> row index
 
-    def __enter__(self) -> "MultiAgentLiveDisplay":
+    def __enter__(self) -> MultiAgentLiveDisplay:
         self._live.__enter__()
         return self
 
@@ -131,8 +131,6 @@ class MultiAgentLiveDisplay:
             "error": "[red]error[/red]",
         }
         status_text = style_map.get(status, status)
-        # Rebuild table with updated row
-        new_table = _build_multi_agent_table()
         for row in self._table.rows:
             _ = row  # rows not directly accessible; store state separately
             break

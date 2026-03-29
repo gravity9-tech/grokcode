@@ -66,9 +66,7 @@ async def _session_export(name: str, session_id: str | None) -> None:
         f"  [green]✓[/green] Session exported as [bold]{name}[/bold]  "
         f"({len(bundle.session.history)} messages, {len(bundle.files_snapshot)} files)"
     )
-    console.print(
-        f"  [dim]Share:[/dim] .grokcode/handoffs/{name}.json"
-    )
+    console.print(f"  [dim]Share:[/dim] .grokcode/handoffs/{name}.json")
 
 
 @session_app.command("import")
@@ -80,9 +78,10 @@ def session_import(
 
 
 async def _session_import(name: str) -> None:
+    from rich.panel import Panel
+
     from grokcode.session.handoff import import_session
     from grokcode.session.session import save_session
-    from rich.panel import Panel
 
     session = await import_session(name=name)
     await save_session(session)

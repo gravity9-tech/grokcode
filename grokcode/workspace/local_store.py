@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Local workspace document store.
 
@@ -11,6 +9,8 @@ This is the primary backend for workspace init/index/query.
 When xAI publishes a stable Collections/RAG endpoint it can be
 swapped in as an optional remote backend.
 """
+
+from __future__ import annotations
 
 import json
 import math
@@ -56,7 +56,7 @@ class LocalDocument:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> "LocalDocument":
+    def from_dict(cls, data: dict) -> LocalDocument:
         return cls(
             doc_id=data["id"],
             collection_id=data["collection_id"],

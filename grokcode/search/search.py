@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Web search and X (Twitter) search via xAI's native search tools.
 
@@ -10,6 +8,8 @@ xAI exposes search as special tool types in the chat completions API:
 We call completions with the appropriate tool enabled and extract
 results from the message annotations / content.
 """
+
+from __future__ import annotations
 
 import logging
 from typing import Any
@@ -34,12 +34,16 @@ class SearchResult:
 
 async def web_search(query: str, api_key: str, max_results: int = 5) -> list[SearchResult]:
     """Search the web using xAI's web_search tool."""
-    return await _search(query=query, api_key=api_key, tool_type="web_search", max_results=max_results)
+    return await _search(
+        query=query, api_key=api_key, tool_type="web_search", max_results=max_results
+    )
 
 
 async def x_search(query: str, api_key: str, max_results: int = 5) -> list[SearchResult]:
     """Search X (Twitter) using xAI's x_search tool."""
-    return await _search(query=query, api_key=api_key, tool_type="x_search", max_results=max_results)
+    return await _search(
+        query=query, api_key=api_key, tool_type="x_search", max_results=max_results
+    )
 
 
 async def _search(
@@ -100,9 +104,7 @@ async def _search(
                         )
         # Include main text as a summary result if no annotations
         if not results:
-            text = " ".join(
-                b.get("text", "") for b in content_blocks if b.get("type") == "text"
-            )
+            text = " ".join(b.get("text", "") for b in content_blocks if b.get("type") == "text")
             if text:
                 results.append(
                     SearchResult(

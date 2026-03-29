@@ -38,10 +38,10 @@ def config_set(
     if key == "xai_api_key":
         try:
             set_api_key(value)
-            print_success(f"API key stored securely in system keychain.")
+            print_success("API key stored securely in system keychain.")
         except RuntimeError as e:
             print_error(str(e))
-            raise typer.Exit(1)
+            raise typer.Exit(1) from e
         # Also persist masked reference so config show works
         user_config.xai_api_key = value[:8] + "..." if len(value) > 8 else value
         save_user_config(user_config)
@@ -63,7 +63,7 @@ def config_set(
             coerced = value
     except ValueError:
         print_error(f"Invalid value {value!r} for key {key!r}")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
     setattr(user_config, key, coerced)
     save_user_config(user_config)
@@ -94,12 +94,15 @@ def config_show() -> None:
         ws = config.workspace_config
         table.add_row("workspace", ws.workspace, "grokcode.workspace.json")
         table.add_row("team_id", ws.team_id, "grokcode.workspace.json")
-        table.add_row("collection_id", ws.collection_id or "[dim]not set[/dim]", "grokcode.workspace.json")
+        table.add_row(
+            "collection_id", ws.collection_id or "[dim]not set[/dim]", "grokcode.workspace.json"
+        )
         table.add_row("rules count", str(len(ws.rules)), "grokcode.workspace.json")
         table.add_row("mcp_servers", str(len(ws.mcp_servers)), "grokcode.workspace.json")
 
     console.print(table)
 
     from grokcode.config.config import USER_CONFIG_DIR
+
     console.print(f"\n  [dim]Config dir:[/dim]  {USER_CONFIG_DIR}")
     console.print(f"  [dim]Audit log:[/dim]   {USER_CONFIG_DIR / 'audit.log'}")

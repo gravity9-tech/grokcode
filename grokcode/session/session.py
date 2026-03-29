@@ -24,7 +24,7 @@ class Session(BaseModel):
     token_usage: TokenUsage | None = None
 
     @classmethod
-    def new(cls, task: str) -> "Session":
+    def new(cls, task: str) -> Session:
         return cls(task=task)
 
 
@@ -47,7 +47,7 @@ async def load_session(
     path = sessions_dir / f"{session_id}.json"
     if not path.exists():
         raise FileNotFoundError(f"Session not found: {session_id}")
-    async with aiofiles.open(path, "r") as f:
+    async with aiofiles.open(path) as f:
         data = json.loads(await f.read())
     return Session(**data)
 
@@ -61,7 +61,7 @@ async def list_sessions(
     sessions = []
     for path in sessions_dir.glob("*.json"):
         try:
-            async with aiofiles.open(path, "r") as f:
+            async with aiofiles.open(path) as f:
                 data = json.loads(await f.read())
             sessions.append(Session(**data))
         except Exception:

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Workspace Collections client.
 
@@ -10,6 +8,8 @@ the local store ensures the workspace feature works reliably for the PoC.
 The interface (create_collection, upload_document, query_collection, …)
 is unchanged — callers are unaffected.
 """
+
+from __future__ import annotations
 
 import uuid
 from datetime import datetime
@@ -41,7 +41,7 @@ class Collection:
         self.created_at = created_at
 
     @classmethod
-    def from_api(cls, data: dict) -> "Collection":
+    def from_api(cls, data: dict) -> Collection:
         return cls(
             id=data["id"],
             name=data.get("name", ""),
@@ -50,16 +50,14 @@ class Collection:
 
 
 class Document:
-    def __init__(
-        self, id: str, collection_id: str, metadata: dict, created_at: datetime
-    ) -> None:
+    def __init__(self, id: str, collection_id: str, metadata: dict, created_at: datetime) -> None:
         self.id = id
         self.collection_id = collection_id
         self.metadata = metadata
         self.created_at = created_at
 
     @classmethod
-    def from_local(cls, doc: LocalDocument) -> "Document":
+    def from_local(cls, doc: LocalDocument) -> Document:
         return cls(
             id=doc.id,
             collection_id=doc.collection_id,
@@ -69,16 +67,14 @@ class Document:
 
 
 class SearchResult:
-    def __init__(
-        self, doc_id: str, content: str, score: float, metadata: dict
-    ) -> None:
+    def __init__(self, doc_id: str, content: str, score: float, metadata: dict) -> None:
         self.doc_id = doc_id
         self.content = content
         self.score = score
         self.metadata = metadata
 
     @classmethod
-    def from_local(cls, r: LocalSearchResult) -> "SearchResult":
+    def from_local(cls, r: LocalSearchResult) -> SearchResult:
         return cls(
             doc_id=r.doc_id,
             content=r.content,
@@ -99,7 +95,7 @@ class CollectionsClient:
     async def close(self) -> None:
         pass  # nothing to close for local backend
 
-    async def __aenter__(self) -> "CollectionsClient":
+    async def __aenter__(self) -> CollectionsClient:
         return self
 
     async def __aexit__(self, *_: Any) -> None:
@@ -167,10 +163,7 @@ class CollectionsClient:
 
     async def list_documents(self, collection_id: str) -> list[Document]:
         """List all documents in a local collection."""
-        return [
-            Document.from_local(doc)
-            for doc in load_all_documents(collection_id)
-        ]
+        return [Document.from_local(doc) for doc in load_all_documents(collection_id)]
 
     # ------------------------------------------------------------------
     # Querying

@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Business logic for workspace (Collections) operations."""
+
+from __future__ import annotations
 
 import json
 import logging
@@ -14,9 +14,26 @@ WORKSPACE_INDEX_PATH = Path(".grokcode") / "workspace-index.json"
 WORKSPACE_CONFIG_FILENAME = "grokcode.workspace.json"
 
 INDEXABLE_EXTENSIONS = {
-    ".py", ".md", ".json", ".yaml", ".yml", ".toml", ".txt", ".rst",
-    ".ts", ".tsx", ".js", ".jsx", ".go", ".rs", ".java", ".kt",
-    ".html", ".css", ".sh", ".sql",
+    ".py",
+    ".md",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".toml",
+    ".txt",
+    ".rst",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    ".go",
+    ".rs",
+    ".java",
+    ".kt",
+    ".html",
+    ".css",
+    ".sh",
+    ".sql",
 }
 MAX_FILE_SIZE = 100 * 1024  # 100 KB
 
@@ -119,8 +136,18 @@ def _collect_files(paths: list[Path]) -> list[Path]:
 def _is_ignored(path: Path) -> bool:
     """Return True for paths that should never be indexed."""
     ignored_parts = {
-        ".git", ".grokcode", "__pycache__", ".venv", "venv", "node_modules",
-        "dist", "build", ".eggs", ".mypy_cache", ".pytest_cache", ".ruff_cache",
+        ".git",
+        ".grokcode",
+        "__pycache__",
+        ".venv",
+        "venv",
+        "node_modules",
+        "dist",
+        "build",
+        ".eggs",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
     }
     return any(part in ignored_parts for part in path.parts)
 
